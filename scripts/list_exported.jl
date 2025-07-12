@@ -1,9 +1,9 @@
-using KiteUtils
-# This script lists all global variables in the current module.
+using Pkg
+modules = ["KiteUtils", "KiteModels"]
 
-function list_exported(mod)
+function list_exported(pkgname::String)
     # Get all global variables in the module
-    globals = names(mod)
+    globals = @eval names($(Symbol(pkgname)))
 
     # Print the global variables
     println("Exported names in module $(string(mod)):")
@@ -12,4 +12,9 @@ function list_exported(mod)
     end
 end
 
-list_exported(KiteUtils)
+for mod in modules
+    Pkg.activate("./scripts/$(mod)")
+    Pkg.update()
+    @eval using $(Symbol(mod))
+    list_exported(mod)
+end
