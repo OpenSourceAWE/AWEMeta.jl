@@ -1,5 +1,6 @@
 using Pkg
 modules = ["KiteUtils", "KiteModels"]
+dict = Dict{String, Vector{Symbol}}()
 
 function list_exported(pkgname::String)
     # Get all global variables in the module
@@ -12,9 +13,20 @@ function list_exported(pkgname::String)
     end
 end
 
+function add_exported!(dict::Dict{String, Vector{Symbol}}, pkgname::String)
+    # Get the module object from its name
+    mod = @eval $(Symbol(pkgname))
+    
+    # Get only the exported names (not all globals)
+    exported = names(mod; all=false)
+    
+    # Store in the dictionary
+    dict[pkgname] = exported
+end
+
 for mod in modules
     Pkg.activate("./scripts/$(mod)")
     Pkg.update()
     @eval using $(Symbol(mod))
-    list_exported(mod)
+    add_exported!(dict, mod)
 end
