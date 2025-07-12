@@ -3,7 +3,11 @@ uuid = "aa2431f4-53cf-41fb-af51-49d70ac46c03"
 authors = ["Uwe Fechner <fechner@aenarete.eu> and contributors"]
 version = "1.0.0-DEV"
 
+[deps]
+KiteUtils = "90980105-b163-44e5-ba9f-8b1c83bb0533"
+
 [compat]
+KiteUtils = "0.10.15"
 julia = "1.6.7"
 
 [extras]
