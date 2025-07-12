@@ -1,2 +1,3 @@
-# AWEMeta.jl
-Meta repository for checks of the eco-system
+# AWEMeta
+
+[![Build Status](https://github.com/OpenSourceAWE/AWEMeta.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/OpenSourceAWE/AWEMeta.jl/actions/workflows/CI.yml?query=branch%3Amain)
