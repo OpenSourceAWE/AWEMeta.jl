@@ -1,8 +1,8 @@
-name: Weekly Script
+name: Daily Script
 
 on:
   schedule:
-    - cron: '0 0 * * *'   # Runs every day at midnight UTC
+    - cron: '0 2 * * *'   # Runs every day at 2am UTC
   workflow_dispatch:      # Allows manual trigger from the Actions tab
 
 jobs:
