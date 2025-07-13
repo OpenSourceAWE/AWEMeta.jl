@@ -1,7 +1,5 @@
 # AWEMeta
 
-[![Build Status](https://github.com/OpenSourceAWE/AWEMeta.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/OpenSourceAWE/AWEMeta.jl/actions/workflows/CI.yml?query=branch%3Amain)
-
 ## Automated tests that run on all (most) **OpenSourceAWE** repositories
 
 Check [here](https://github.com/OpenSourceAWE/AWEMeta.jl/actions) for the last results.
