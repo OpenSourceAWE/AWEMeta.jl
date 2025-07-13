@@ -15,7 +15,7 @@
   </tr>
 </table>
 
-Check [here](https://github.com/OpenSourceAWE/AWEMeta.jl/actions) for the last results.
+Check [here](https://github.com/OpenSourceAWE/AWEMeta.jl/actions) for the detailed results.
 
 ### Tests of released versions
 - The workflow **Install KiteModels (latest release)** installs the latest, released version of KiteModels as package, installs the examples, creates a system image and runs the example `ram_air_kite.jl`
