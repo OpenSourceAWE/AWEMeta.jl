@@ -2,7 +2,7 @@ name: Test KiteModels#main
 
 on:
   schedule:
-    - cron: '0 4 * * *'   # Runs every day at 3am UTC
+    - cron: '0 4 * * *'   # Runs every day at 4am UTC
   workflow_dispatch:      # Allows manual trigger from the Actions tab
 
 jobs:
