@@ -1,5 +1,7 @@
 # AWEMeta
 
+## Integration tests for **OpenSourceAWE** packages
+
 <table>
   <tr>
     <td><img src="https://github.com/OpenSourceAWE/AWEMeta.jl/actions/workflows/KM1.yml/badge.svg" alt="KM1"></td>
@@ -12,9 +14,6 @@
     <td></td>
   </tr>
 </table>
-
-
-## Integration tests for **OpenSourceAWE** packages
 
 Check [here](https://github.com/OpenSourceAWE/AWEMeta.jl/actions) for the last results.
 
