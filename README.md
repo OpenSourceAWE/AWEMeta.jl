@@ -11,6 +11,8 @@ Check [here](https://github.com/OpenSourceAWE/AWEMeta.jl/actions) for the last r
 - The workflow **Install KiteModels#main** installs KiteModels#main as package, installs the examples, creates a system image and runs the example `ram_air_kite.jl`
 - The workflow **Install KiteModels** installs the latest, released version of KiteModels#main as package, installs the examples, creates a system image and runs the example `ram_air_kite.jl`
 
+These scripts run automatically every night between `01:00am` and `06:00am`. 
+
 ## Purpose
 Detect possible bugs due to the ways our packages interact with each other or
 due to broken updates in indirect dependencies (integration test). Furthermore, test the
