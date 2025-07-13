@@ -4,7 +4,7 @@
 
 ## Automated tests that run on all (most) **OpenSourceAWE** repositories
 
-Check [here](https://github.com/OpenSourceAWE/AWEMeta.jl/actions/workflows) for the last results.
+Check [here](https://github.com/OpenSourceAWE/AWEMeta.jl/actions) for the last results.
 
 The workflow KS1 installs the package `KiteSimulators.jl`, which is a meta-package
 that installs most of the other packages of the `OpenSourceAWE` software tools.
