@@ -6,7 +6,7 @@
 
 Check [here](https://github.com/OpenSourceAWE/AWEMeta.jl/actions) for the last results.
 
-- The workflow **Test KiteModels#main --update** installs the package `KiteSimulators.jl`, which is a meta-package that installs most of the other packages of the `OpenSourceAWE` software tools.
+- The workflow **Install KiteSimulators (last release)** installs the package `KiteSimulators.jl`, which is a meta-package that installs most of the other packages of the `OpenSourceAWE` software tools.
 
 - The workflow **Test KiteModels#main --update** checks out the main branch of `KiteModels.jl` and runs `create_sysimage --update`.
 - The workflow **Test KiteModels#main** checks out the main branch of `KiteModels.jl` and runs `create_sysimage`, in other words, it uses `Manifest-v1.11.toml.default`.
