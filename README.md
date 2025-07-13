@@ -5,8 +5,8 @@
 Check [here](https://github.com/OpenSourceAWE/AWEMeta.jl/actions) for the last results.
 
 ### Tests of released versions
-- The workflow **Install KiteModels (last release)** installs the latest, released version of KiteModels as package, installs the examples, creates a system image and runs the example `ram_air_kite.jl`
-- The workflow **Install KiteSimulators (last release)** installs the package `KiteSimulators.jl`, which is a meta-package that installs most of the other packages of the `OpenSourceAWE` software tools. Furthermore it creates a system image and runs the example `autopilot.jl`.
+- The workflow **Install KiteModels (latest release)** installs the latest, released version of KiteModels as package, installs the examples, creates a system image and runs the example `ram_air_kite.jl`
+- The workflow **Install KiteSimulators (latest release)** installs the package `KiteSimulators.jl`, which is a meta-package that installs most of the other packages of the `OpenSourceAWE` software tools. Furthermore it creates a system image and runs the example `autopilot.jl`.
 
 ### Tests of pre-release versions
 - The workflow **Test KiteModels#main --update** checks out the main branch of `KiteModels.jl` and runs `create_sysimage --update`.
