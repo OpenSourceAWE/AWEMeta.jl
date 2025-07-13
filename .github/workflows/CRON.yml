@@ -1,4 +1,4 @@
-name: Daily Script
+name: Install KiteSimulators (last release)
 
 on:
   schedule:
@@ -21,4 +21,4 @@ jobs:
           channel: '1'
       - name: Run your script
         run: |
-          DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24' ./scripts/run_test
+          DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24' ./scripts/install_kitesimulators
