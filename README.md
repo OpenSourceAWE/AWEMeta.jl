@@ -4,10 +4,13 @@
 
 ## Automated tests that run on all (most) **OpenSourceAWE** repositories
 
-Check [here](https://github.com/OpenSourceAWE/AWEMeta.jl/actions/workflows/CRON.yml) for the last results.
+Check [here](https://github.com/OpenSourceAWE/AWEMeta.jl/actions/workflows) for the last results.
 
-This script installs the package `KiteSimulators.jl`, which is a meta-package
+The workflow KS1 installs the package `KiteSimulators.jl`, which is a meta-package
 that installs most of the other packages of the `OpenSourceAWE` software tools.
+
+The workflow KM1 checks out the main branch of `KiteModels.jl` and runs `create_sysimage --update`.
+The workflow KM2 checks out the main branch of `KiteModels.jl` and runs `create_sysimage`, in other words, it uses `Manifest-v1.11.toml.default`.
 
 ## Purpose
 Detect possible bugs due to the ways our packages interact with each other or
