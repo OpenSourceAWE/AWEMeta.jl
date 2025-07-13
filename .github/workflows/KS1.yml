@@ -19,6 +19,6 @@ jobs:
       - uses: julia-actions/install-juliaup@v2
         with:
           channel: '1'
-      - name: Run your script
+      - name: Run script install_kitesimulators
         run: |
           DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24' ./scripts/install_kitesimulators

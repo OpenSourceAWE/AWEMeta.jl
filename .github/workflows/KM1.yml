@@ -2,7 +2,7 @@ name: Test KiteModels#main --update
 
 on:
   schedule:
-    - cron: '0 2 * * *'   # Runs every day at 2am UTC
+    - cron: '0 3 * * *'   # Runs every day at 3am UTC
   workflow_dispatch:      # Allows manual trigger from the Actions tab
 
 jobs:
@@ -19,6 +19,6 @@ jobs:
       - uses: julia-actions/install-juliaup@v2
         with:
           channel: '1'
-      - name: Run your script
+      - name: Run script test_kitemodels_main-update
         run: |
           DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24' ./scripts/test_kitemodels_main-update
