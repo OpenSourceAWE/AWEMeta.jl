@@ -1,5 +1,11 @@
 # AWEMeta
 
+![Workflow Status](https://github.com/OpenSourceAWE/AWEMeta.jl/actions/workflows/KM1.yml/badge.svg)![Workflow Status](https://github.com/OpenSourceAWE/AWEMeta.jl/actions/workflows/KM1.yml/badge.svg)
+![Workflow Status](https://github.com/OpenSourceAWE/AWEMeta.jl/actions/workflows/KM3.yml/badge.svg)
+![Workflow Status](https://github.com/OpenSourceAWE/AWEMeta.jl/actions/workflows/KM4.yml/badge.svg)
+![Workflow Status](https://github.com/OpenSourceAWE/AWEMeta.jl/actions/workflows/KS1.yml/badge.svg)
+
+
 ## Integration tests for **OpenSourceAWE** packages
 
 Check [here](https://github.com/OpenSourceAWE/AWEMeta.jl/actions) for the last results.
