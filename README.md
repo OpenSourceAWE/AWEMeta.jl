@@ -1,6 +1,6 @@
 # AWEMeta
 
-## Automated tests that run on all (most) **OpenSourceAWE** repositories
+## Integration tests for **OpenSourceAWE** packages
 
 Check [here](https://github.com/OpenSourceAWE/AWEMeta.jl/actions) for the last results.
 
