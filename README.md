@@ -11,6 +11,7 @@
   <tr>
     <td><img src="https://github.com/OpenSourceAWE/AWEMeta.jl/actions/workflows/KM4.yml/badge.svg" alt="KM4"></td>
     <td><img src="https://github.com/OpenSourceAWE/AWEMeta.jl/actions/workflows/KS1.yml/badge.svg" alt="KS1"></td>
+    <td><img src="https://github.com/OpenSourceAWE/AWEMeta.jl/actions/workflows/KC2.yml/badge.svg" alt="KC2"></td>
     <td></td>
   </tr>
 </table>
