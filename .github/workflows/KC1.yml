@@ -21,4 +21,4 @@ jobs:
           channel: '1'
       - name: Run script install_kitesimulators
         run: |
-          DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24' ./scripts/install_controllers_main
+          DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24' ./scripts/install_kitecontrollers_main
