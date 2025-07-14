@@ -19,12 +19,14 @@ Check [here](https://github.com/OpenSourceAWE/AWEMeta.jl/actions) for the detail
 
 ### Tests of released versions
 - The workflow **Install KiteModels (latest release)** installs the latest, released version of KiteModels as package, installs the examples, creates a system image and runs the example `ram_air_kite.jl`
+- The workflow **Install KiteControllers (latest release)** installs the latest, released version of KiteControllers as package, installs the examples and runs the example `ram_air_kite.jl`
 - The workflow **Install KiteSimulators (latest release)** installs the package `KiteSimulators.jl`, which is a meta-package that installs most of the other packages of the `OpenSourceAWE` software tools. Furthermore it creates a system image and runs the example `autopilot.jl`.
 
 ### Tests of pre-release versions
 - The workflow **Test KiteModels#main --update** checks out the main branch of `KiteModels.jl` and runs `create_sysimage --update`.
 - The workflow **Test KiteModels#main** checks out the main branch of `KiteModels.jl` and runs `create_sysimage`, in other words, it uses `Manifest-v1.11.toml.default`.
 - The workflow **Install KiteModels#main** installs KiteModels#main as package, installs the examples, creates a system image and runs the example `ram_air_kite.jl`
+- The workflow **Install KiteControllers#main** installs KiteControllers#main as package, installs the examples and runs the example `autopilot.jl`
 
 These scripts run automatically every night between `01:00am` and `06:00am`. 
 
