@@ -1,0 +1,24 @@
+name: Install KiteControllers (latest release)
+
+on:
+  schedule:
+    - cron: '0 2 * * *'   # Runs every day at 2am UTC
+  workflow_dispatch:      # Allows manual trigger from the Actions tab
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install matplotlib
+        run: if [ "$RUNNER_OS" = "Linux" ]; then sudo apt-get install -y python3-matplotlib; fi
+        shell: bash
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Install mesa
+        run: sudo apt-get update && sudo apt-get install -y xorg-dev mesa-utils xvfb libgl1 freeglut3-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
+      - uses: julia-actions/install-juliaup@v2
+        with:
+          channel: '1'
+      - name: Run script install_kitesimulators
+        run: |
+          DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24' ./scripts/install_kitecontrollers
