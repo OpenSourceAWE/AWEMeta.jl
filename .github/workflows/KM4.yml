@@ -1,4 +1,4 @@
-name: Install KiteModels (latest release)
+name: Install KiteModels (latest release) using Julia 1.11
 
 on:
   schedule:

@@ -1,4 +1,4 @@
-name: Install KiteSimulators (latest release)
+name: Install KiteSimulators (latest release) using Julia 1.11
 
 on:
   schedule:
