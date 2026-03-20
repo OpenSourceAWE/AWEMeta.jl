@@ -13,10 +13,10 @@ jobs:
         run: if [ "$RUNNER_OS" = "Linux" ]; then sudo apt-get install -y python3-matplotlib; fi
         shell: bash
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Install mesa
         run: sudo apt-get update && sudo apt-get install -y xorg-dev mesa-utils xvfb libgl1 freeglut3-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
-      - uses: julia-actions/install-juliaup@v2
+      - uses: julia-actions/install-juliaup@v3
         with:
           channel: '1.11'
       - name: Run script install_kitesimulators
