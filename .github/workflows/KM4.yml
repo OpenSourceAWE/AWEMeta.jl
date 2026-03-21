@@ -19,6 +19,6 @@ jobs:
       - uses: julia-actions/install-juliaup@v2
         with:
           channel: '1.12'
-      - name: Run script install_kitemodels_main
+      - name: Run script install_kitemodels
         run: |
           DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24' ./scripts/install_kitemodels
