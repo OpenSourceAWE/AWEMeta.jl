@@ -12,3 +12,4 @@ mkdir test
 cd test
 julia --project=. -e 'using Pkg; Pkg.add(Pkg.PackageSpec(name="KiteModels", rev="main"))'
 julia --project -e 'using KiteModels; KiteModels.install_examples()'
+./bin/create_sys_image
