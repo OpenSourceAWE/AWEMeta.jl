@@ -11,7 +11,10 @@ export JULIA_DEPOT_PATH=/tmp/testdepot
 export JULIA_PKG_SERVER_REGISTRY_PREFERENCE=eager
 mkdir test 
 cd test
-julia --project=. -e 'using Pkg; Pkg.add("KiteModels")'
+julia --project=. -e 'using Pkg; Pkg.Registry.update(); try; Pkg.add(Pkg.PackageSpec(name="KiteModels", version="0.11.6")); catch err; @warn "KiteModels v0.11.6 is not available in the registry, installing latest from main" exception=(err, catch_backtrace()); Pkg.add(Pkg.PackageSpec(name="KiteModels", rev="main")); end; Pkg.update()'
 julia --project -e 'using KiteModels; KiteModels.install_examples()'
+echo "Status of the packages:"
+julia --project -e 'using Pkg; Pkg.status()'
+sleep 5
 echo "Creating the system image..."
 ./bin/create_sys_image
