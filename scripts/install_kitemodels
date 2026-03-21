@@ -8,6 +8,7 @@ rm -rf /tmp/test
 mkdir /tmp/test
 cd /tmp/test
 export JULIA_DEPOT_PATH=/tmp/testdepot 
+export JULIA_PKG_SERVER_REGISTRY_PREFERENCE=eager
 mkdir test 
 cd test
 julia --project=. -e 'using Pkg; Pkg.add("KiteModels")'
