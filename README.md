@@ -9,7 +9,7 @@
     <td><img src="https://github.com/OpenSourceAWE/AWEMeta.jl/actions/workflows/KM3.yml/badge.svg" alt="KM3"></td>
   </tr>
       <td><img src="https://github.com/OpenSourceAWE/AWEMeta.jl/actions/workflows/KC1.yml/badge.svg" alt="KM1"></td>
-    <td></td>
+      <td><img src="https://github.com/OpenSourceAWE/AWEMeta.jl/actions/workflows/TE1.yml/badge.svg" alt="TE1"></td>
     <td></td>
   </tr>
   <tr>
