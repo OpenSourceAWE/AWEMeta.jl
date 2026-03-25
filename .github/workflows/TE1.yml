@@ -1,4 +1,4 @@
-name: Test Tethers.jl test_installation
+name: Test Tethers.jl test_tethers
 
 on:
   schedule:
@@ -19,6 +19,6 @@ jobs:
       - uses: julia-actions/install-juliaup@v3
         with:
           channel: '1'
-      - name: Run script test_installation
+      - name: Run script test_tethers
         run: |
-          DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24' ./scripts/test_installation
+          DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24' ./scripts/test_tethers
