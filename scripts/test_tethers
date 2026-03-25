@@ -1,0 +1,14 @@
+#!/bin/bash -eu
+# SPDX-FileCopyrightText: 2025 Uwe Fechner
+# SPDX-License-Identifier: MIT
+
+rm -rf /tmp/testdepot
+mkdir /tmp/testdepot
+rm -rf /tmp/test
+mkdir /tmp/test
+cd /tmp/test
+export JULIA_DEPOT_PATH=/tmp/testdepot 
+export JULIA_PKG_SERVER_REGISTRY_PREFERENCE=eager
+git clone https://github.com/OpenSourceAWE/Tethers.jl.git
+cd Tethers.jl/test
+./test_installation
