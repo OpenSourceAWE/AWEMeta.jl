@@ -1,4 +1,4 @@
-name: Test Tethers.jl test_tethers
+name: Test Tethers#main
 
 on:
   schedule:
