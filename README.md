@@ -35,6 +35,8 @@ Check [here](https://github.com/OpenSourceAWE/AWEMeta.jl/actions) for the detail
 
 These scripts run automatically every night between `01:00am` and `06:00am`.
 
+**Last workflow run:** 2026-03-27
+
 If this repo is not touched, the runs are paused after three months, so check when they were running the last time before trusting the green badges.
 
 ## Purpose
