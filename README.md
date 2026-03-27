@@ -31,8 +31,11 @@ Check [here](https://github.com/OpenSourceAWE/AWEMeta.jl/actions) for the detail
 - The workflow **Test KiteModels#main** checks out the main branch of `KiteModels.jl` and runs `create_sysimage`, in other words, it uses `Manifest-v1.11.toml.default`.
 - The workflow **Install KiteModels#main** installs KiteModels#main as package, installs the examples, creates a system image
 - The workflow **Install KiteControllers#main** installs KiteControllers#main as package, installs the examples and runs the example `autopilot.jl`
+- The workflow **Test Tethers#main** checks out the main branch of `Tether.jl` and runs `install -y` and `create_sy_image -y`.
 
-These scripts run automatically every night between `01:00am` and `06:00am`. 
+These scripts run automatically every night between `01:00am` and `06:00am`.
+
+If this repo is not touched, the runs are paused after three months, so check when they were running the last time before trusting the green badges.
 
 ## Purpose
 Detect possible bugs due to the ways our packages interact with each other or
