@@ -19,6 +19,8 @@
   </tr>
 </table>
 
+**Last workflow run:** 2026-03-27
+
 Check [here](https://github.com/OpenSourceAWE/AWEMeta.jl/actions) for the detailed results.
 
 ### Tests of released versions
@@ -34,8 +36,6 @@ Check [here](https://github.com/OpenSourceAWE/AWEMeta.jl/actions) for the detail
 - The workflow **Test Tethers#main** checks out the main branch of `Tether.jl` and runs `install -y` and `create_sy_image -y`.
 
 These scripts run automatically every night between `01:00am` and `06:00am`.
-
-**Last workflow run:** 2026-03-27
 
 If this repo is not touched, the runs are paused after three months, so check when they were running the last time before trusting the green badges.
 
