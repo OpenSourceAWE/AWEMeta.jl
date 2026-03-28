@@ -23,6 +23,8 @@ jobs:
           max_attempts: 3
           command: |
             curl -fsSL https://install.julialang.org | sh -s -- --yes --default-channel 1.11
+      - name: Add juliaup to PATH
+        run: echo "$HOME/.juliaup/bin" >> $GITHUB_PATH
       - name: Run script install_kitesimulators
         run: |
           DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24' ./scripts/install_kitesimulators
