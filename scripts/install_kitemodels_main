@@ -12,4 +12,8 @@ mkdir test
 cd test
 julia --project=. -e 'using Pkg; Pkg.add(Pkg.PackageSpec(name="KiteModels", rev="main"))'
 julia --project -e 'using KiteModels; KiteModels.install_examples()'
-./bin/create_sys_image
+if [[ ! -x ./bin/create_sys_image ]]; then
+	echo "Error: expected executable ./bin/create_sys_image after install_examples()."
+	exit 1
+fi
+./bin/create_sys_image -y
