@@ -22,7 +22,13 @@ jobs:
       - name: Run script install_kitemodels_main
         run: |
           set -euxo pipefail
-          xvfb-run -a -s '-screen 0 1024x768x24' ./scripts/install_kitemodels_main |& tee install_kitemodels_main.log
+
+          # Run and capture output
+          if ! xvfb-run -a -s '-screen 0 1024x768x24' ./scripts/install_kitemodels_main |& tee install_kitemodels_main.log; then
+            echo "install_kitemodels_main failed; tailing log:"
+            tail -n 200 install_kitemodels_main.log || true
+            exit 1
+          fi
       - name: Upload install_kitemodels_main log
         if: always()
         uses: actions/upload-artifact@v4
