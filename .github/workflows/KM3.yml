@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install matplotlib
-        run: if [ "$RUNNER_OS" = "Linux" ]; then sudo apt-get install -y python3-matplotlib; fi
+        run: if [ "$RUNNER_OS" = "Linux" ]; then sudo apt-get update && sudo apt-get install -y python3-matplotlib; fi
         shell: bash
       - name: Checkout code
         uses: actions/checkout@v6
@@ -21,4 +21,11 @@ jobs:
           channel: '1'
       - name: Run script install_kitemodels_main
         run: |
-          DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24' ./scripts/install_kitemodels_main
+          set -euxo pipefail
+          xvfb-run -a -s '-screen 0 1024x768x24' ./scripts/install_kitemodels_main 2>&1 | tee install_kitemodels_main.log
+      - name: Upload install_kitemodels_main log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: install_kitemodels_main-log
+          path: install_kitemodels_main.log
