@@ -16,4 +16,4 @@ if [[ ! -x ./bin/create_sys_image ]]; then
 	echo "Error: expected executable ./bin/create_sys_image after install_examples()."
 	exit 1
 fi
-./bin/create_sys_image -y
+./bin/create_sys_image
