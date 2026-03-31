@@ -13,7 +13,7 @@ jobs:
         run: if [ "$RUNNER_OS" = "Linux" ]; then sudo apt-get update && sudo apt-get install -y python3-matplotlib; fi
         shell: bash
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
       - name: Install mesa
         run: sudo apt-get update && sudo apt-get install -y xorg-dev mesa-utils xvfb libgl1 freeglut3-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
       - uses: julia-actions/install-juliaup@v2
@@ -22,7 +22,7 @@ jobs:
       - name: Run script install_kitemodels_main
         run: |
           set -euxo pipefail
-          xvfb-run -a -s '-screen 0 1024x768x24' ./scripts/install_kitemodels_main 2>&1 | tee install_kitemodels_main.log
+          xvfb-run -a -s '-screen 0 1024x768x24' ./scripts/install_kitemodels_main |& tee install_kitemodels_main.log
       - name: Upload install_kitemodels_main log
         if: always()
         uses: actions/upload-artifact@v4
