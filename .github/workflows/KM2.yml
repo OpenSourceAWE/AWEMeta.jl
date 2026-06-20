@@ -8,7 +8,16 @@ on:
 jobs:
   run-script:
     runs-on: ubuntu-latest
+    timeout-minutes: 120
     steps:
+      - name: Create swap space
+        run: |
+          sudo swapoff -a
+          sudo dd if=/dev/zero of=/swapfile bs=1M count=16384
+          sudo chmod 0600 /swapfile
+          sudo mkswap /swapfile
+          sudo swapon /swapfile
+          echo "Swap created: $(swapon --show)"
       - name: Checkout code
         uses: actions/checkout@v6
       - name: Install mesa
