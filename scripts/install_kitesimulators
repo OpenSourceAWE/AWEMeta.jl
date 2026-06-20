@@ -16,7 +16,12 @@ julia --project -e "using Pkg; Pkg.add(\"Timers\")"
 echo "Initializing the project..."
 julia --project -e "using KiteSimulators; init_project()"
 echo "Creating the system image..."
-./bin/create_sys_image -y
+if ./bin/create_sys_image -y; then
+    echo "Success: create_sys_image executed successfully."
+else
+    echo "Error: create_sys_image failed (exit code $?). Possible causes: out-of-memory or other runtime error."
+    exit 1
+fi
 echo "Running example..."
 julia --project -e "__PRECOMPILE__ = true; using KiteSimulators; include(\"examples/autopilot.jl\")"
 echo "Done."

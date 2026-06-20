@@ -17,4 +17,9 @@ echo "Status of the packages:"
 julia --project -e 'using Pkg; Pkg.status()'
 sleep 5
 echo "Creating the system image..."
-./bin/create_sys_image
+if ./bin/create_sys_image; then
+    echo "Success: create_sys_image executed successfully."
+else
+    echo "Error: create_sys_image failed (exit code $?). Possible causes: out-of-memory or other runtime error."
+    exit 1
+fi
