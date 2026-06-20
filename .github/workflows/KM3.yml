@@ -18,6 +18,10 @@ jobs:
           sudo mkswap /swapfile
           sudo swapon /swapfile
           echo "Swap created: $(swapon --show)"
+      - name: Check RAM
+        run: |
+          echo "Total RAM:"
+          free -m
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Install mesa
