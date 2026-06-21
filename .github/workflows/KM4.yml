@@ -9,13 +9,18 @@ jobs:
   run-script:
     runs-on: ubuntu-latest
     steps:
-      - name: Install matplotlib
+      - name: Create swap space
         run: |
-          if [ "$RUNNER_OS" = "Linux" ]; then
-            sudo apt-get update
-            sudo apt-get install -y --no-install-recommends python3-matplotlib
-          fi
-        shell: bash
+          sudo swapoff -a
+          sudo dd if=/dev/zero of=/swapfile bs=1M count=32768
+          sudo chmod 0600 /swapfile
+          sudo mkswap /swapfile
+          sudo swapon /swapfile
+          echo "Swap created: $(swapon --show)"
+      - name: Check RAM
+        run: |
+          echo "Total RAM:"
+          free -m
       - name: Checkout code
         uses: actions/checkout@v6
       - name: Install mesa
