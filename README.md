@@ -19,7 +19,7 @@
   </tr>
 </table>
 
-**Last workflow run:** 2026-07-30
+**Last workflow run:** 2026-07-31
 
 Check [here](https://github.com/OpenSourceAWE/AWEMeta.jl/actions) for the detailed results.
 
