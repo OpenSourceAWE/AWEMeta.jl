@@ -7,7 +7,7 @@ version = "1.0.0-DEV"
 KiteUtils = "90980105-b163-44e5-ba9f-8b1c83bb0533"
 
 [compat]
-KiteUtils = "0.10.15"
+KiteUtils = "0.10.15, 0.11"
 julia = "1.6.7"
 
 [extras]
