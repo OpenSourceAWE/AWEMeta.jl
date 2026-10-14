@@ -9,6 +9,14 @@ jobs:
   run-script:
     runs-on: ubuntu-latest
     steps:
+      - name: Create swap space
+        run: |
+          sudo swapoff -a
+          sudo dd if=/dev/zero of=/swapfile bs=1M count=32768
+          sudo chmod 0600 /swapfile
+          sudo mkswap /swapfile
+          sudo swapon /swapfile
+          echo "Swap created: $(swapon --show)"
       - name: Install matplotlib
         run: |
           if [ "$RUNNER_OS" = "Linux" ]; then
