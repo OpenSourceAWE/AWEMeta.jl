@@ -12,7 +12,7 @@ jobs:
       - name: Create swap space
         run: |
           sudo swapoff -a
-          sudo dd if=/dev/zero of=/swapfile bs=1M count=32768
+          sudo dd if=/dev/zero of=/swapfile bs=1M count=38768
           sudo chmod 0600 /swapfile
           sudo mkswap /swapfile
           sudo swapon /swapfile
