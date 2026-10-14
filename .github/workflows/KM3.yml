@@ -8,7 +8,7 @@ on:
 jobs:
   run-script:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 240
     steps:
       - name: Create swap space
         run: |
@@ -33,6 +33,13 @@ jobs:
         run: |
           set -euxo pipefail
 
+          # Log memory and swap activity every 60 s (si/so = swap in/out in KB/s)
+          ( set +x; while true; do
+              echo "[mem $(date -u +%H:%M:%S)] $(free -m | awk '/^Mem/{printf "used=%dMB avail=%dMB", $3, $7} /^Swap/{printf " swap=%dMB", $3}') $(vmstat 5 2 | awk 'END{printf "si=%s so=%s", $7, $8}')"
+              sleep 55
+            done ) &
+          MEMLOG_PID=$!
+          trap 'kill $MEMLOG_PID 2>/dev/null || true' EXIT
           # Run and capture output
           if ! xvfb-run -a -s '-screen 0 1024x768x24' ./scripts/install_kitemodels_main |& tee install_kitemodels_main.log; then
             echo "install_kitemodels_main failed; tailing log:"
