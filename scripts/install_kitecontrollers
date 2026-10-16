@@ -6,5 +6,8 @@ mkdir /tmp/test
 cd /tmp/test
 export JULIA_DEPOT_PATH=/tmp/testdepot 
 export JULIA_PKG_SERVER_REGISTRY_PREFERENCE=eager
-julia --project="." -e 'using Pkg; Pkg.add("KiteControllers"); using KiteControllers; KiteControllers.install_examples()'
+# work around a Pkg bug in Julia 1.13: auto-precompilation after Pkg.add fails with
+# "Unknown package" if an indirect dependency changes its version
+export JULIA_PKG_PRECOMPILE_AUTO=0
+julia --project="." -e 'using Pkg; Pkg.add("KiteControllers"); using KiteControllers; KiteControllers.install_examples(); Pkg.precompile()'
 julia --project -e 'using KiteControllers; __PRECOMPILE__ = true; include("examples/autopilot.jl")'

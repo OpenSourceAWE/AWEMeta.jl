@@ -9,10 +9,13 @@ mkdir /tmp/test
 cd /tmp/test
 export JULIA_DEPOT_PATH=/tmp/testdepot 
 export JULIA_PKG_SERVER_REGISTRY_PREFERENCE=eager
+# work around a Pkg bug in Julia 1.13: auto-precompilation after Pkg.add fails with
+# "Unknown package" if an indirect dependency changes its version
+export JULIA_PKG_PRECOMPILE_AUTO=0
 mkdir test 
 cd test
 julia --project=. -e 'using Pkg; Pkg.Registry.update(); try; Pkg.add(Pkg.PackageSpec(name="KiteModels", version="0.11.6")); catch err; @warn "KiteModels v0.11.6 is not available in the registry, installing latest from main" exception=(err, catch_backtrace()); Pkg.add(Pkg.PackageSpec(name="KiteModels", rev="main")); end; Pkg.update()'
-julia --project -e 'using KiteModels; KiteModels.install_examples()'
+julia --project -e 'using Pkg, KiteModels; KiteModels.install_examples(); Pkg.precompile()'
 echo "Status of the packages:"
 julia --project -e 'using Pkg; Pkg.status()'
 sleep 5

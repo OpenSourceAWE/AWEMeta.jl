@@ -8,10 +8,13 @@ rm -rf /tmp/test
 mkdir /tmp/test
 cd /tmp/test
 export JULIA_DEPOT_PATH=/tmp/testdepot 
+# work around a Pkg bug in Julia 1.13: auto-precompilation after Pkg.add fails with
+# "Unknown package" if an indirect dependency changes its version
+export JULIA_PKG_PRECOMPILE_AUTO=0
 mkdir test 
 cd test
 julia --project=. -e 'using Pkg; Pkg.add(Pkg.PackageSpec(name="KiteModels", rev="main"))'
-julia --project -e 'using KiteModels; KiteModels.install_examples()'
+julia --project -e 'using Pkg, KiteModels; KiteModels.install_examples(); Pkg.precompile()'
 if [[ ! -x ./bin/create_sys_image ]]; then
 	echo "Error: expected executable ./bin/create_sys_image after install_examples()."
 	exit 1
