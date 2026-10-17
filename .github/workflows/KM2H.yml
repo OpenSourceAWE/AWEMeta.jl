@@ -1,0 +1,39 @@
+name: Test KiteModels#main with heap size hint
+
+on:
+  workflow_dispatch:      # Allows manual trigger from the Actions tab
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - name: Create swap space
+        run: |
+          sudo swapoff -a
+          sudo dd if=/dev/zero of=/swapfile bs=1M count=38768
+          sudo chmod 0600 /swapfile
+          sudo mkswap /swapfile
+          sudo swapon /swapfile
+          echo "Swap created: $(swapon --show)"
+      - name: Check RAM
+        run: |
+          echo "Total RAM:"
+          free -m
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: Install mesa
+        run: sudo apt-get update && sudo apt-get install -y xorg-dev mesa-utils xvfb libgl1 freeglut3-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
+      - uses: julia-actions/install-juliaup@v2
+        with:
+          channel: '1.13'
+      - name: Run script test_kitemodels_main_heaphint
+        run: |
+          # Log memory and swap activity every 60 s (si/so = swap in/out in KB/s)
+          ( set +x; while true; do
+              echo "[mem $(date -u +%H:%M:%S)] $(free -m | awk '/^Mem/{printf "used=%dMB avail=%dMB", $3, $7} /^Swap/{printf " swap=%dMB", $3}') $(vmstat 5 2 | awk 'END{printf "si=%s so=%s", $7, $8}')"
+              sleep 55
+            done ) &
+          MEMLOG_PID=$!
+          trap 'kill $MEMLOG_PID 2>/dev/null || true' EXIT
+          DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24' ./scripts/test_kitemodels_main_heaphint

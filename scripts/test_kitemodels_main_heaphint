@@ -1,0 +1,28 @@
+#!/bin/bash -eu
+# SPDX-FileCopyrightText: 2026 Uwe Fechner
+# SPDX-License-Identifier: MIT
+
+# Like test_kitemodels_main, but passes --heap-size-hint to the Julia process that
+# compiles the system image (via sysimage_build_args of PackageCompiler.create_sysimage).
+# The --heap-size-hint in bin/create_sys_image only applies to the outer process.
+HEAP_HINT=${HEAP_HINT:-8G}
+
+rm -rf /tmp/testdepot
+mkdir /tmp/testdepot
+rm -rf /tmp/test
+mkdir /tmp/test
+cd /tmp/test
+export JULIA_DEPOT_PATH=/tmp/testdepot 
+export JULIA_PKG_SERVER_REGISTRY_PREFERENCE=eager
+git clone https://github.com/OpenSourceAWE/KiteModels.jl.git
+cd KiteModels.jl
+sed -i "s/^\(\s*\)include_transitive_dependencies=true,/&\n\1sysimage_build_args=\`--heap-size-hint=${HEAP_HINT}\`,/" test/create_sys_image.jl
+if ! grep -q "sysimage_build_args=\`--heap-size-hint=${HEAP_HINT}\`" test/create_sys_image.jl; then
+    echo "Error: could not add sysimage_build_args to test/create_sys_image.jl"
+    exit 1
+fi
+echo "Patched test/create_sys_image.jl:"
+grep -n -A1 "include_transitive_dependencies" test/create_sys_image.jl
+cd bin
+./install -y
+./create_sys_image -y
