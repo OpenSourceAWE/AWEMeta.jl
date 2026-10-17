@@ -1,4 +1,4 @@
-name: Install KiteModels (latest release) using Julia 1.12
+name: Install KiteModels (latest release)
 
 on:
   schedule:
@@ -7,7 +7,12 @@ on:
 
 jobs:
   run-script:
+    name: Julia ${{ matrix.julia-version }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        julia-version: ['1', '1.12']
     steps:
       - name: Create swap space
         run: |
@@ -27,7 +32,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y xorg-dev mesa-utils xvfb libgl1 freeglut3-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
       - uses: julia-actions/install-juliaup@v2
         with:
-          channel: '1.12'
+          channel: ${{ matrix.julia-version }}
       - name: Run script install_kitemodels
         run: |
           DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24' ./scripts/install_kitemodels
