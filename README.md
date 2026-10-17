@@ -29,7 +29,7 @@ Check [here](https://github.com/OpenSourceAWE/AWEMeta.jl/actions) for the detail
 - The workflow **Install KiteSimulators (latest release)** (Julia 1.11) installs the package `KiteSimulators.jl`, which is a meta-package that installs most of the other packages of the `OpenSourceAWE` software tools. Furthermore it creates a system image and runs the example `autopilot.jl`.
 
 ### Tests of pre-release versions
-- The workflow **Test KiteModels#main --update** (latest stable Julia) checks out the main branch of `KiteModels.jl` and runs `install -y --update; create_sysimage -y`.
+- The workflow **Test KiteModels#main --update** (latest stable Julia) checks out the main branch of `KiteModels.jl` and runs `install -y --update`. It does not create a system image.
 - The workflow **Test KiteModels#main** (latest stable Julia) checks out the main branch of `KiteModels.jl` and runs `create_sysimage`, in other words, it uses `Manifest-v1.x.toml.default` matching the Julia version.
 - The workflow **Install KiteModels#main** (latest stable Julia) installs KiteModels#main as package, installs the examples, creates a system image
 - The workflow **Install KiteControllers#main** (latest stable Julia) installs KiteControllers#main as package, installs the examples and runs the example `autopilot.jl`
