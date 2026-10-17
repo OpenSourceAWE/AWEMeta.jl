@@ -26,3 +26,5 @@ else
     echo "Error: create_sys_image failed (exit code $?). Possible causes: out-of-memory or other runtime error."
     exit 1
 fi
+echo "Running the example simulate_simple.jl..."
+julia --project -e 'using KiteModels; include("examples/simulate_simple.jl")'
