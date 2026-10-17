@@ -24,16 +24,18 @@
 Check [here](https://github.com/OpenSourceAWE/AWEMeta.jl/actions) for the detailed results.
 
 ### Tests of released versions
-- The workflow **Install KiteModels (latest release)** installs the latest, released version of KiteModels as package, installs the examples, creates a system image and runs the example `simulate_simple.jl`
-- The workflow **Install KiteControllers (latest release)** installs the latest, released version of KiteControllers as package, installs the examples and runs the example `autopilot.jl`
-- The workflow **Install KiteSimulators (latest release)** installs the package `KiteSimulators.jl`, which is a meta-package that installs most of the other packages of the `OpenSourceAWE` software tools. Furthermore it creates a system image and runs the example `autopilot.jl`.
+- The workflow **Install KiteModels (latest release)** (Julia 1.12) installs the latest, released version of KiteModels as package, installs the examples, creates a system image and runs the example `simulate_simple.jl`
+- The workflow **Install KiteControllers (latest release)** (latest stable Julia) installs the latest, released version of KiteControllers as package, installs the examples and runs the example `autopilot.jl`
+- The workflow **Install KiteSimulators (latest release)** (Julia 1.11) installs the package `KiteSimulators.jl`, which is a meta-package that installs most of the other packages of the `OpenSourceAWE` software tools. Furthermore it creates a system image and runs the example `autopilot.jl`.
 
 ### Tests of pre-release versions
-- The workflow **Test KiteModels#main --update** checks out the main branch of `KiteModels.jl` and runs `install -y --update; create_sysimage -y`.
-- The workflow **Test KiteModels#main** checks out the main branch of `KiteModels.jl` and runs `create_sysimage`, in other words, it uses `Manifest-v1.11.toml.default`.
-- The workflow **Install KiteModels#main** installs KiteModels#main as package, installs the examples, creates a system image
-- The workflow **Install KiteControllers#main** installs KiteControllers#main as package, installs the examples and runs the example `autopilot.jl`
-- The workflow **Test Tethers#main** checks out the main branch of `Tether.jl` and runs `install -y` and `create_sy_image -y`.
+- The workflow **Test KiteModels#main --update** (latest stable Julia) checks out the main branch of `KiteModels.jl` and runs `install -y --update; create_sysimage -y`.
+- The workflow **Test KiteModels#main** (Julia 1.12) checks out the main branch of `KiteModels.jl` and runs `create_sysimage`, in other words, it uses `Manifest-v1.12.toml.default`.
+- The workflow **Install KiteModels#main** (latest stable Julia) installs KiteModels#main as package, installs the examples, creates a system image
+- The workflow **Install KiteControllers#main** (latest stable Julia) installs KiteControllers#main as package, installs the examples and runs the example `autopilot.jl`
+- The workflow **Test Tethers#main** (latest stable Julia) checks out the main branch of `Tether.jl` and runs `install -y` and `create_sy_image -y`.
+
+"Latest stable Julia" means the juliaup channel `1`, i.e. the newest released Julia version.
 
 These scripts run automatically every night between `01:00am` and `06:00am`.
 
