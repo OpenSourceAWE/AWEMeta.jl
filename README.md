@@ -30,7 +30,7 @@ Check [here](https://github.com/OpenSourceAWE/AWEMeta.jl/actions) for the detail
 
 ### Tests of pre-release versions
 - The workflow **Test KiteModels#main --update** (latest stable Julia) checks out the main branch of `KiteModels.jl` and runs `install -y --update; create_sysimage -y`.
-- The workflow **Test KiteModels#main** (Julia 1.12) checks out the main branch of `KiteModels.jl` and runs `create_sysimage`, in other words, it uses `Manifest-v1.12.toml.default`.
+- The workflow **Test KiteModels#main** (latest stable Julia) checks out the main branch of `KiteModels.jl` and runs `create_sysimage`, in other words, it uses `Manifest-v1.x.toml.default` matching the Julia version.
 - The workflow **Install KiteModels#main** (latest stable Julia) installs KiteModels#main as package, installs the examples, creates a system image
 - The workflow **Install KiteControllers#main** (latest stable Julia) installs KiteControllers#main as package, installs the examples and runs the example `autopilot.jl`
 - The workflow **Test Tethers#main** (latest stable Julia) checks out the main branch of `Tether.jl` and runs `install -y` and `create_sy_image -y`.
