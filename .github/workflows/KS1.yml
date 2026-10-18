@@ -9,6 +9,22 @@ jobs:
   run-script:
     runs-on: ubuntu-latest
     steps:
+      - name: Create swap space (zram + swap file)
+        run: |
+          sudo swapoff -a
+          # Fast tier: compressed swap in RAM, used first
+          sudo modprobe zram || { sudo apt-get update && sudo apt-get install -y linux-modules-extra-$(uname -r) && sudo modprobe zram; }
+          echo zstd | sudo tee /sys/block/zram0/comp_algorithm
+          echo 20G  | sudo tee /sys/block/zram0/disksize
+          sudo mkswap /dev/zram0
+          sudo swapon -p 100 /dev/zram0
+          # Slow tier: disk swap file, only used when zram is full
+          sudo fallocate -l 16G /swapfile
+          sudo chmod 0600 /swapfile
+          sudo mkswap /swapfile
+          sudo swapon -p 10 /swapfile
+          echo 180 | sudo tee /proc/sys/vm/swappiness
+          echo "Swap created:"; swapon --show
       - name: Install matplotlib
         run: |
           if [ "$RUNNER_OS" = "Linux" ]; then
