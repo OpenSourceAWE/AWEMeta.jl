@@ -2,7 +2,7 @@ name: Test Tethers#main
 
 on:
   schedule:
-    - cron: '0 8 * * *'   # Runs every day at 3am UTC
+    - cron: '0 8 * * *'   # Runs every day at 8am UTC
   workflow_dispatch:      # Allows manual trigger from the Actions tab
 
 jobs:
