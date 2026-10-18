@@ -2,7 +2,7 @@ name: Install KiteModels (latest releases)
 
 on:
   schedule:
-    - cron: '0 6 * * *'   # Runs every day at 1am UTC
+    - cron: '0 6 * * *'   # Runs every day at 6am UTC
   workflow_dispatch:      # Allows manual trigger from the Actions tab
 
 jobs:
