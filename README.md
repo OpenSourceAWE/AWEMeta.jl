@@ -20,7 +20,7 @@
   </tr>
   <tr>
     <td><img src="https://github.com/OpenSourceAWE/AWEMeta.jl/actions/workflows/KC4.yml/badge.svg" alt="KC4"></td>
-    <td></td>
+    <td><img src="https://github.com/OpenSourceAWE/AWEMeta.jl/actions/workflows/TE2.yml/badge.svg" alt="TE2"></td>
     <td></td>
   </tr>
 </table>
@@ -42,6 +42,7 @@ Check [here](https://github.com/OpenSourceAWE/AWEMeta.jl/actions) for the detail
 - The workflow **Test KiteControllers#main** (latest stable Julia) checks out the main branch of `KiteControllers.jl` and runs `install -y` and `create_sys_image -y`, in other words, it uses `Manifest-v1.x.toml.default` matching the Julia version.
 - The workflow **Test KiteControllers#main --update** (latest stable Julia) checks out the main branch of `KiteControllers.jl` and runs `install -y --update` and `create_sys_image -y`.
 - The workflow **Test Tethers#main** (latest stable Julia) checks out the main branch of `Tether.jl` and runs `install -y` and `create_sy_image -y`.
+- The workflow **Test Tethers#main (2 image threads)** (latest stable Julia) does the same as **Test Tethers#main**, but sets `JULIA_IMAGE_THREADS=2` to compile the system image with two threads.
 
 "Latest stable Julia" means the juliaup channel `1`, i.e. the newest released Julia version.
 
