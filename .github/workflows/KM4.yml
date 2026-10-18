@@ -1,4 +1,4 @@
-name: Install KiteModels (latest release)
+name: Install KiteModels (latest releases)
 
 on:
   schedule:
@@ -35,4 +35,11 @@ jobs:
           channel: ${{ matrix.julia-version }}
       - name: Run script install_kitemodels
         run: |
+          # Log memory and swap activity every 60 s (si/so = swap in/out in KB/s)
+          ( while true; do
+              echo "[mem $(date -u +%H:%M:%S)] $(free -m | awk '/^Mem/{printf "used=%dMB avail=%dMB", $3, $7} /^Swap/{printf " swap=%dMB", $3}') $(vmstat 5 2 | awk 'END{printf "si=%s so=%s", $7, $8}')"
+              sleep 55
+            done ) &
+          MEMLOG_PID=$!
+          trap 'kill $MEMLOG_PID 2>/dev/null || true' EXIT
           DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24' ./scripts/install_kitemodels

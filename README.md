@@ -30,7 +30,7 @@
 Check [here](https://github.com/OpenSourceAWE/AWEMeta.jl/actions) for the detailed results.
 
 ### Tests of released versions
-- The workflow **Install KiteModels (latest release)** (latest stable Julia and Julia 1.12) installs the latest, released version of KiteModels as package, installs the examples, creates a system image and runs the example `simulate_simple.jl`
+- The workflow **Install KiteModels (latest releases)** (latest stable Julia and Julia 1.12) installs the latest, released version of KiteModels as package, installs the examples, creates a system image and runs the example `simulate_simple.jl`
 - The workflow **Install KiteControllers (latest release)** (latest stable Julia) installs the latest, released version of KiteControllers as package, installs the examples and runs the example `autopilot.jl`
 - The workflow **Install KiteSimulators (latest release)** (Julia 1.11) installs the package `KiteSimulators.jl`, which is a meta-package that installs most of the other packages of the `OpenSourceAWE` software tools. Furthermore it creates a system image and runs the example `autopilot.jl`.
 
