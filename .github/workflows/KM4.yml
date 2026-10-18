@@ -30,6 +30,7 @@ jobs:
           sudo swapon -p 10 /swapfile
           echo 180 | sudo tee /proc/sys/vm/swappiness
           echo "Swap created:"; swapon --show
+          echo "CPU: $(grep -m1 'model name' /proc/cpuinfo | cut -d: -f2- | xargs) ($(nproc) cores)"
       - name: Check RAM
         run: |
           echo "Total RAM:"
