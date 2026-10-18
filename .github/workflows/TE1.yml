@@ -9,14 +9,22 @@ jobs:
   run-script:
     runs-on: ubuntu-latest
     steps:
-      - name: Create swap space
+      - name: Create swap space (zram + swap file)
         run: |
           sudo swapoff -a
-          sudo dd if=/dev/zero of=/swapfile bs=1M count=32768
+          # Fast tier: compressed swap in RAM, used first
+          sudo modprobe zram || { sudo apt-get update && sudo apt-get install -y linux-modules-extra-$(uname -r) && sudo modprobe zram; }
+          echo zstd | sudo tee /sys/block/zram0/comp_algorithm
+          echo 12G  | sudo tee /sys/block/zram0/disksize
+          sudo mkswap /dev/zram0
+          sudo swapon -p 100 /dev/zram0
+          # Slow tier: disk swap file, only used when zram is full
+          sudo fallocate -l 16G /swapfile
           sudo chmod 0600 /swapfile
           sudo mkswap /swapfile
-          sudo swapon /swapfile
-          echo "Swap created: $(swapon --show)"
+          sudo swapon -p 10 /swapfile
+          echo 180 | sudo tee /proc/sys/vm/swappiness
+          echo "Swap created:"; swapon --show
       - name: Install matplotlib
         run: |
           if [ "$RUNNER_OS" = "Linux" ]; then
@@ -35,7 +43,7 @@ jobs:
         run: |
           # Log memory and swap activity every 60 s (si/so = swap in/out in KB/s)
           ( set +x; while true; do
-              echo "[mem $(date -u +%H:%M:%S)] $(free -m | awk '/^Mem/{printf "used=%dMB avail=%dMB", $3, $7} /^Swap/{printf " swap=%dMB", $3}') $(vmstat 5 2 | awk 'END{printf "si=%s so=%s", $7, $8}')"
+              echo "[mem $(date -u +%H:%M:%S)] $(free -m | awk '/^Mem/{printf "used=%dMB avail=%dMB", $3, $7} /^Swap/{printf " swap=%dMB", $3}') zram=$(zramctl --noheadings --output DATA,COMPR /dev/zram0 | awk '{print $1 "->" $2}') $(vmstat 5 2 | awk 'END{printf "si=%s so=%s", $7, $8}')"
               sleep 55
             done ) &
           MEMLOG_PID=$!
