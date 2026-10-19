@@ -42,9 +42,9 @@ jobs:
           channel: '1'
       - name: Run script test_tethers
         run: |
-          # Log memory and swap activity every 60 s (si/so = swap in/out in KB/s)
+          # Log memory, swap and CPU activity every 60 s (si/so = swap in/out in KB/s, cpu = 100% - idle over 5 s)
           ( set +x; while true; do
-              echo "[mem $(date -u +%H:%M:%S)] $(free -m | awk '/^Mem/{printf "used=%dMB avail=%dMB", $3, $7} /^Swap/{printf " swap=%dMB", $3}') zram=$(zramctl --noheadings --output DATA,COMPR /dev/zram0 | awk '{print $1 "->" $2}') $(vmstat 5 2 | awk 'END{printf "si=%s so=%s", $7, $8}')"
+              echo "[mem $(date -u +%H:%M:%S)] $(free -m | awk '/^Mem/{printf "used=%dMB avail=%dMB", $3, $7} /^Swap/{printf " swap=%dMB", $3}') zram=$(zramctl --noheadings --output DATA,COMPR /dev/zram0 | awk '{print $1 "->" $2}') $(vmstat 5 2 | awk 'END{printf "si=%s so=%s cpu=%d%%", $7, $8, 100-$15}')"
               sleep 55
             done ) &
           MEMLOG_PID=$!
