@@ -36,4 +36,21 @@ jobs:
           channel: '1'
       - name: Run script test_kitecontrollers_main-update
         run: |
+          # Log memory, swap and CPU activity every 60 s (si/so = swap in/out in KB/s, cpu = 100% - idle over 5 s)
+          ( set +x; while true; do
+              echo "[mem $(date -u +%H:%M:%S)] $(free -m | awk '/^Mem/{printf "used=%dMB avail=%dMB", $3, $7} /^Swap/{printf " swap=%dMB", $3}') zram=$(zramctl --noheadings --output DATA,COMPR /dev/zram0 | awk '{print $1 "->" $2}') $(vmstat 5 2 | awk 'END{printf "si=%s so=%s cpu=%d%%", $7, $8, 100-$15}')"
+              sleep 55
+            done ) &
+          MEMLOG_PID=$!
+          # Track the peak memory demand every 2 s: RAM used + swap used - RAM used by zram
+          # itself (used + swap would count the compressed zram pages twice)
+          ( set +x; peak=0; while true; do
+              d=$(awk '/^MemTotal:/{t=$2} /^MemAvailable:/{a=$2} /^SwapTotal:/{st=$2} /^SwapFree:/{sf=$2} END{print int((t-a+st-sf)/1024)}' /proc/meminfo)
+              z=$(awk '{print int($3/1048576)}' /sys/block/zram0/mm_stat 2>/dev/null || echo 0)
+              d=$((d - ${z:-0}))
+              if [ "$d" -gt "$peak" ]; then peak=$d; echo "${peak}MB at $(date -u +%H:%M:%S)" > /tmp/mem_peak; fi
+              sleep 2
+            done ) &
+          PEAK_PID=$!
+          trap 'kill $MEMLOG_PID $PEAK_PID 2>/dev/null || true; echo "[mem peak] RAM + swap demand: $(cat /tmp/mem_peak 2>/dev/null)"' EXIT
           DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24' ./scripts/test_kitecontrollers_main-update
