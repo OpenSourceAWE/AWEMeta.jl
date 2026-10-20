@@ -32,12 +32,18 @@ jobs:
           swap_used() {
             sysctl -n vm.swapusage | awk '{for (i = 1; i < NF; i++) if ($i == "used") {sub("M", "", $(i+2)); printf "%d", $(i+2)}}'
           }
-          # Log memory, swap and CPU activity every 60 s
+          # Log memory, swap and CPU activity every 60 s. The samples go to a file, so that the
+          # logger never blocks when the runner stops reading its output under heavy swapping;
+          # tail shows them in the job log. The timestamp of a sample is when it was taken, the
+          # prefix GitHub adds is when the runner received it.
+          : > /tmp/memlog
           ( set +x; while true; do
-              echo "[mem $(date -u +%H:%M:%S)] used=$(mem_used)MB swap=$(swap_used)MB $(top -l 2 -n 0 -s 5 | awk '/^CPU usage/{l=$0} END{split(l, f, ", "); sub(/% idle/, "", f[3]); printf "cpu=%d%%", 100-f[3]}')"
+              echo "[mem $(date -u +%H:%M:%S)] used=$(mem_used)MB swap=$(swap_used)MB $(top -l 2 -n 0 -s 5 | awk '/^CPU usage/{l=$0} END{split(l, f, ", "); sub(/% idle/, "", f[3]); printf "cpu=%d%%", 100-f[3]}')" >> /tmp/memlog
               sleep 55
             done ) &
           MEMLOG_PID=$!
+          tail -f /tmp/memlog &
+          TAIL_PID=$!
           # Track the peak memory demand every 2 s: RAM used + swap used
           ( set +x; peak=0; while true; do
               d=$(( $(mem_used) + $(swap_used) ))
@@ -45,5 +51,7 @@ jobs:
               sleep 2
             done ) &
           PEAK_PID=$!
-          trap 'kill $MEMLOG_PID $PEAK_PID 2>/dev/null || true; echo "[mem peak] RAM + swap demand: $(cat /tmp/mem_peak 2>/dev/null)"' EXIT
+          # Highest priority for the monitoring, also for the commands it starts from now on
+          sudo renice -n -20 -p $MEMLOG_PID $PEAK_PID $TAIL_PID > /dev/null || true
+          trap 'kill $MEMLOG_PID $PEAK_PID $TAIL_PID 2>/dev/null || true; echo "[mem peak] RAM + swap demand: $(cat /tmp/mem_peak 2>/dev/null)"' EXIT
           ./scripts/test_tethers
