@@ -29,6 +29,16 @@ jobs:
               /Pages active/{a=$3} /Pages wired down/{w=$4} /occupied by compressor/{c=$5}
               END{printf "%d", (a+w+c)*ps/1048576}'
           }
+          # Memory demand in MB: active + wired + the uncompressed size of the pages in the
+          # compressor. This should be comparable with RAM + swap used on Linux; used + swap
+          # counts compressed pages at their compressed size. Swap is not added, because macOS
+          # swaps out compressed pages, which should still be counted as stored in the
+          # compressor. Both are logged until this is verified.
+          mem_demand() {
+            vm_stat | awk -v ps="$(sysctl -n hw.pagesize)" '
+              /Pages active/{a=$3} /Pages wired down/{w=$4} /stored in compressor/{s=$5}
+              END{printf "%d", (a+w+s)*ps/1048576}'
+          }
           swap_used() {
             sysctl -n vm.swapusage | awk '{for (i = 1; i < NF; i++) if ($i == "used") {sub("M", "", $(i+2)); printf "%d", $(i+2)}}'
           }
@@ -38,20 +48,22 @@ jobs:
           # prefix GitHub adds is when the runner received it.
           : > /tmp/memlog
           ( set +x; while true; do
-              echo "[mem $(date -u +%H:%M:%S)] used=$(mem_used)MB swap=$(swap_used)MB $(top -l 2 -n 0 -s 5 | awk '/^CPU usage/{l=$0} END{split(l, f, ", "); sub(/% idle/, "", f[3]); printf "cpu=%d%%", 100-f[3]}')" >> /tmp/memlog
+              echo "[mem $(date -u +%H:%M:%S)] used=$(mem_used)MB swap=$(swap_used)MB demand=$(mem_demand)MB $(top -l 2 -n 0 -s 5 | awk '/^CPU usage/{l=$0} END{split(l, f, ", "); sub(/% idle/, "", f[3]); printf "cpu=%d%%", 100-f[3]}')" >> /tmp/memlog
               sleep 55
             done ) &
           MEMLOG_PID=$!
           tail -f /tmp/memlog &
           TAIL_PID=$!
-          # Track the peak memory demand every 2 s: RAM used + swap used
-          ( set +x; peak=0; while true; do
+          # Track the peak memory demand every 2 s: RAM used + swap used, and demand as above
+          ( set +x; peak=0; peak2=0; while true; do
               d=$(( $(mem_used) + $(swap_used) ))
               if [ "$d" -gt "$peak" ]; then peak=$d; echo "${peak}MB at $(date -u +%H:%M:%S)" > /tmp/mem_peak; fi
+              d2=$(mem_demand)
+              if [ "$d2" -gt "$peak2" ]; then peak2=$d2; echo "${peak2}MB at $(date -u +%H:%M:%S)" > /tmp/mem_peak2; fi
               sleep 2
             done ) &
           PEAK_PID=$!
           # Highest priority for the monitoring, also for the commands it starts from now on
           sudo renice -n -20 -p $MEMLOG_PID $PEAK_PID $TAIL_PID > /dev/null || true
-          trap 'kill $MEMLOG_PID $PEAK_PID $TAIL_PID 2>/dev/null || true; echo "[mem peak] RAM + swap demand: $(cat /tmp/mem_peak 2>/dev/null)"' EXIT
+          trap 'kill $MEMLOG_PID $PEAK_PID $TAIL_PID 2>/dev/null || true; echo "[mem peak] RAM + swap demand: $(cat /tmp/mem_peak 2>/dev/null)"; echo "[mem peak] demand (uncompressed): $(cat /tmp/mem_peak2 2>/dev/null)"' EXIT
           ./scripts/test_tethers
