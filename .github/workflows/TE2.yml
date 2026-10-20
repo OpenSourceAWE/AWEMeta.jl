@@ -39,6 +39,10 @@ jobs:
               /Pages active/{a=$3} /Pages wired down/{w=$4} /stored in compressor/{s=$5}
               END{printf "%d", (a+w+s)*ps/1048576}'
           }
+          # Number of pages swapped in and out since boot
+          swap_counts() {
+            vm_stat | awk '/^Swapins/{i=$2} /^Swapouts/{o=$2} END{printf "%d %d", i, o}'
+          }
           swap_used() {
             sysctl -n vm.swapusage | awk '{for (i = 1; i < NF; i++) if ($i == "used") {sub("M", "", $(i+2)); printf "%d", $(i+2)}}'
           }
@@ -47,8 +51,14 @@ jobs:
           # tail shows them in the job log. The timestamp of a sample is when it was taken, the
           # prefix GitHub adds is when the runner received it.
           : > /tmp/memlog
-          ( set +x; while true; do
-              echo "[mem $(date -u +%H:%M:%S)] used=$(mem_used)MB swap=$(swap_used)MB demand=$(mem_demand)MB $(top -l 2 -n 0 -s 5 | awk '/^CPU usage/{l=$0} END{split(l, f, ", "); sub(/% idle/, "", f[3]); printf "cpu=%d%%", 100-f[3]}')" >> /tmp/memlog
+          # si/so: swap in/out in KB/s since the previous sample, as from vmstat on Linux
+          ( set +x; ps=$(sysctl -n hw.pagesize)
+            read -r pi po <<< "$(swap_counts)"; pt=$(date +%s)
+            while true; do
+              read -r ci co <<< "$(swap_counts)"; ct=$(date +%s); dt=$(( ct > pt ? ct - pt : 1 ))
+              si=$(( (ci - pi) * ps / 1024 / dt )); so=$(( (co - po) * ps / 1024 / dt ))
+              pi=$ci; po=$co; pt=$ct
+              echo "[mem $(date -u +%H:%M:%S)] used=$(mem_used)MB swap=$(swap_used)MB demand=$(mem_demand)MB si=$si so=$so $(top -l 2 -n 0 -s 5 | awk '/^CPU usage/{l=$0} END{split(l, f, ", "); sub(/% idle/, "", f[3]); printf "cpu=%d%%", 100-f[3]}')" >> /tmp/memlog
               sleep 55
             done ) &
           MEMLOG_PID=$!
