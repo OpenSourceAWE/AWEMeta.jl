@@ -39,6 +39,14 @@ jobs:
               /Pages active/{a=$3} /Pages wired down/{w=$4} /stored in compressor/{s=$5}
               END{printf "%d", (a+w+s)*ps/1048576}'
           }
+          # Memory compressor: uncompressed size -> RAM it occupies, in MB, and the ratio, like the
+          # zram field on Linux. The compressed segments are what macOS writes to swap, so the
+          # ratio says how much memory 1 GB of swap holds.
+          comp_stat() {
+            vm_stat | awk -v ps="$(sysctl -n hw.pagesize)" '
+              /stored in compressor/{s=$5} /occupied by compressor/{c=$5}
+              END{printf "comp=%d->%dMB ratio=%.1f", s*ps/1048576, c*ps/1048576, (c > 0 ? s/c : 0)}'
+          }
           # Number of pages swapped in and out since boot
           swap_counts() {
             vm_stat | awk '/^Swapins/{i=$2} /^Swapouts/{o=$2} END{printf "%d %d", i, o}'
@@ -58,7 +66,7 @@ jobs:
               read -r ci co <<< "$(swap_counts)"; ct=$(date +%s); dt=$(( ct > pt ? ct - pt : 1 ))
               si=$(( (ci - pi) * ps / 1024 / dt )); so=$(( (co - po) * ps / 1024 / dt ))
               pi=$ci; po=$co; pt=$ct
-              echo "[mem $(date -u +%H:%M:%S)] used=$(mem_used)MB swap=$(swap_used)MB demand=$(mem_demand)MB si=$si so=$so $(top -l 2 -n 0 -s 5 | awk '/^CPU usage/{l=$0} END{split(l, f, ", "); sub(/% idle/, "", f[3]); printf "cpu=%d%%", 100-f[3]}')" >> /tmp/memlog
+              echo "[mem $(date -u +%H:%M:%S)] used=$(mem_used)MB swap=$(swap_used)MB demand=$(mem_demand)MB $(comp_stat) si=$si so=$so $(top -l 2 -n 0 -s 5 | awk '/^CPU usage/{l=$0} END{split(l, f, ", "); sub(/% idle/, "", f[3]); printf "cpu=%d%%", 100-f[3]}')" >> /tmp/memlog
               sleep 55
             done ) &
           MEMLOG_PID=$!
