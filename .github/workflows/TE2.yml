@@ -39,13 +39,15 @@ jobs:
               /Pages active/{a=$3} /Pages wired down/{w=$4} /stored in compressor/{s=$5}
               END{printf "%d", (a+w+s)*ps/1048576}'
           }
-          # Memory compressor: uncompressed size -> RAM it occupies, in MB, and the ratio, like the
-          # zram field on Linux. The compressed segments are what macOS writes to swap, so the
-          # ratio says how much memory 1 GB of swap holds.
+          # Memory compressor: uncompressed size -> RAM it occupies, in MB, like the zram field on
+          # Linux. The uncompressed size includes the pages swapped out, so the compression ratio
+          # is the uncompressed size / (RAM occupied + swap used): the compressed segments are
+          # what macOS writes to swap, so it says how much memory 1 GB of swap holds.
           comp_stat() {
-            vm_stat | awk -v ps="$(sysctl -n hw.pagesize)" '
+            vm_stat | awk -v ps="$(sysctl -n hw.pagesize)" -v swap="$(swap_used)" '
               /stored in compressor/{s=$5} /occupied by compressor/{c=$5}
-              END{printf "comp=%d->%dMB ratio=%.1f", s*ps/1048576, c*ps/1048576, (c > 0 ? s/c : 0)}'
+              END{s = s*ps/1048576; c = c*ps/1048576
+                  printf "comp=%d->%dMB ratio=%.1f", s, c, (c + swap > 0 ? s/(c + swap) : 0)}'
           }
           # Number of pages swapped in and out since boot
           swap_counts() {
