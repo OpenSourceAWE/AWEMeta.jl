@@ -17,7 +17,10 @@ jobs:
         with:
           minimum-size: 24GB
           maximum-size: 24GB
-          disk-root: "C:"
+          disk-root: "D:"
+      # GLMakie needs OpenGL, which the runner has no driver for; Mesa renders in software
+      - name: Install Mesa
+        uses: ssciwr/setup-mesa-dist-win@v3
       - name: Show memory, disk and CPU
         run: |
           powershell -NoProfile -Command '
