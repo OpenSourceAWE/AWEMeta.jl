@@ -42,6 +42,7 @@ Check [here](https://github.com/OpenSourceAWE/AWEMeta.jl/actions) for the detail
 - The workflow **Test KiteControllers#main --update** (latest stable Julia) checks out the main branch of `KiteControllers.jl` and runs `install -y --update` and `create_sys_image -y`.
 - The workflow **Test Tethers#main** (latest stable Julia) checks out the main branch of `Tether.jl` and runs `install -y` and `create_sy_image -y`.
 - The workflow **Test Tethers#main (macOS)** (latest stable Julia) does the same as **Test Tethers#main**, but on a macOS runner (`macos-latest`, 7 GB of RAM).
+- The workflow **Test RobustKiteControllers#main (Windows)** (latest stable Julia) checks out the main branch of `RobustKiteControllers.jl` on a Windows runner (16 GB of RAM, 24 GB pagefile), runs `create_sys_image` and checks that the compressed system image is smaller than 1.9 GB. It is only started manually.
 
 "Latest stable Julia" means the juliaup channel `1`, i.e. the newest released Julia version.
 

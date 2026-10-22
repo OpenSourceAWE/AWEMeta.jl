@@ -1,0 +1,53 @@
+name: Test RobustKiteControllers#main (Windows)
+
+on:
+  workflow_dispatch:      # Allows manual trigger from the Actions tab
+
+jobs:
+  run-script:
+    runs-on: windows-latest
+    timeout-minutes: 360
+    defaults:
+      run:
+        shell: bash
+    steps:
+      # The image build needs at least 34 GB of RAM + pagefile for two image threads
+      - name: Configure pagefile
+        uses: al-cheb/configure-pagefile-action@v1.5
+        with:
+          minimum-size: 24GB
+          maximum-size: 24GB
+          disk-root: "C:"
+      - name: Show memory, disk and CPU
+        run: |
+          powershell -NoProfile -Command '
+            $cs = Get-CimInstance Win32_ComputerSystem
+            "RAM: {0} MB" -f [math]::Floor($cs.TotalPhysicalMemory / 1MB)
+            Get-CimInstance Win32_PageFileSetting | Format-Table Name, InitialSize, MaximumSize
+            Get-CimInstance Win32_PageFileUsage | Format-Table Name, AllocatedBaseSize, CurrentUsage
+            Get-CimInstance Win32_LogicalDisk | Format-Table DeviceID, @{n="FreeGB"; e={[math]::Floor($_.FreeSpace / 1GB)}}
+            "CPU: {0} ({1} logical processors)" -f (Get-CimInstance Win32_Processor).Name, $cs.NumberOfLogicalProcessors'
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - uses: julia-actions/install-juliaup@v3
+        with:
+          channel: '1'
+      - name: Run script test_rkc_windows
+        run: |
+          # Log memory, pagefile and CPU load every 60 s; the samples go to a file so that the
+          # logger never blocks, tail shows them in the job log
+          : > /tmp/memlog
+          ( set +x; while true; do
+              powershell -NoProfile -Command '
+                $os = Get-CimInstance Win32_OperatingSystem
+                $pf = (Get-CimInstance Win32_PageFileUsage | Measure-Object CurrentUsage -Sum).Sum
+                $peak = (Get-CimInstance Win32_PageFileUsage | Measure-Object PeakUsage -Sum).Sum
+                $cpu = (Get-CimInstance Win32_Processor | Measure-Object LoadPercentage -Average).Average
+                "[mem {0}] used={1}MB avail={2}MB pagefile={3}MB pagefile_peak={4}MB cpu={5}%" -f (Get-Date).ToUniversalTime().ToString("HH:mm:ss"), [math]::Floor(($os.TotalVisibleMemorySize - $os.FreePhysicalMemory) / 1024), [math]::Floor($os.FreePhysicalMemory / 1024), $pf, $peak, $cpu' >> /tmp/memlog
+              sleep 55
+            done ) &
+          MEMLOG_PID=$!
+          tail -f /tmp/memlog &
+          TAIL_PID=$!
+          trap 'kill $MEMLOG_PID $TAIL_PID 2>/dev/null || true' EXIT
+          ./scripts/test_rkc_windows
