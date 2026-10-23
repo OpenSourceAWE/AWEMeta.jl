@@ -37,20 +37,44 @@ jobs:
           channel: '1'
       - name: Run script test_rkc_windows
         run: |
-          # Log memory, pagefile and CPU load every 60 s; the samples go to a file so that the
-          # logger never blocks, tail shows them in the job log
+          # Log memory, pagefile, commit charge and CPU load every 60 s; the samples go to a file
+          # so that the logger never blocks, tail shows them in the job log. Windows fails an
+          # allocation when the commit charge reaches the commit limit (RAM + pagefile).
           : > /tmp/memlog
           ( set +x; while true; do
               powershell -NoProfile -Command '
                 $os = Get-CimInstance Win32_OperatingSystem
                 $pf = (Get-CimInstance Win32_PageFileUsage | Measure-Object CurrentUsage -Sum).Sum
                 $peak = (Get-CimInstance Win32_PageFileUsage | Measure-Object PeakUsage -Sum).Sum
+                $mem = Get-CimInstance Win32_PerfRawData_PerfOS_Memory
                 $cpu = (Get-CimInstance Win32_Processor | Measure-Object LoadPercentage -Average).Average
-                "[mem {0}] used={1}MB avail={2}MB pagefile={3}MB pagefile_peak={4}MB cpu={5}%" -f (Get-Date).ToUniversalTime().ToString("HH:mm:ss"), [math]::Floor(($os.TotalVisibleMemorySize - $os.FreePhysicalMemory) / 1024), [math]::Floor($os.FreePhysicalMemory / 1024), $pf, $peak, $cpu' >> /tmp/memlog
+                "[mem {0}] used={1}MB avail={2}MB pagefile={3}MB pagefile_peak={4}MB commit={5}MB commit_limit={6}MB cpu={7}%" -f (Get-Date).ToUniversalTime().ToString("HH:mm:ss"), [math]::Floor(($os.TotalVisibleMemorySize - $os.FreePhysicalMemory) / 1024), [math]::Floor($os.FreePhysicalMemory / 1024), $pf, $peak, [math]::Floor($mem.CommittedBytes / 1MB), [math]::Floor($mem.CommitLimit / 1MB), $cpu' >> /tmp/memlog
               sleep 55
             done ) &
           MEMLOG_PID=$!
           tail -f /tmp/memlog &
           TAIL_PID=$!
-          trap 'kill $MEMLOG_PID $TAIL_PID 2>/dev/null || true' EXIT
+          # At the end print the peak commit charge since boot, which the 60 s samples can miss
+          cat > /tmp/commit_peak.ps1 <<'EOF'
+          Add-Type -TypeDefinition @"
+          using System;
+          using System.Runtime.InteropServices;
+          public static class Perf {
+              [StructLayout(LayoutKind.Sequential)]
+              public struct Info {
+                  public uint cb;
+                  public UIntPtr CommitTotal, CommitLimit, CommitPeak, PhysicalTotal, PhysicalAvailable,
+                      SystemCache, KernelTotal, KernelPaged, KernelNonpaged, PageSize;
+                  public uint HandleCount, ProcessCount, ThreadCount;
+              }
+              [DllImport("psapi.dll")]
+              public static extern bool GetPerformanceInfo(out Info info, uint cb);
+          }
+          "@
+          $i = New-Object Perf+Info
+          [void][Perf]::GetPerformanceInfo([ref]$i, [Runtime.InteropServices.Marshal]::SizeOf($i))
+          $p = $i.PageSize.ToUInt64() / 1MB
+          "[mem peak] commit_peak={0}MB commit_limit={1}MB" -f [math]::Floor($i.CommitPeak.ToUInt64() * $p), [math]::Floor($i.CommitLimit.ToUInt64() * $p)
+          EOF
+          trap 'kill $MEMLOG_PID $TAIL_PID 2>/dev/null || true; powershell -NoProfile -ExecutionPolicy Bypass -File "$(cygpath -w /tmp/commit_peak.ps1)" || true' EXIT
           ./scripts/test_rkc_windows
