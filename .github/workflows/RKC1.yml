@@ -2,6 +2,11 @@ name: Test RobustKiteControllers#main (Windows)
 
 on:
   workflow_dispatch:      # Allows manual trigger from the Actions tab
+    inputs:
+      image_threads:
+        description: 'JULIA_IMAGE_THREADS for the image build (empty: chosen by bin/create_sys_image)'
+        required: false
+        default: ''
 
 jobs:
   run-script:
@@ -77,4 +82,7 @@ jobs:
           "[mem peak] commit_peak={0}MB commit_limit={1}MB" -f [math]::Floor($i.CommitPeak.ToUInt64() * $p), [math]::Floor($i.CommitLimit.ToUInt64() * $p)
           EOF
           trap 'kill $MEMLOG_PID $TAIL_PID 2>/dev/null || true; powershell -NoProfile -ExecutionPolicy Bypass -File "$(cygpath -w /tmp/commit_peak.ps1)" || true' EXIT
+          if [ -n "$IMAGE_THREADS" ]; then export JULIA_IMAGE_THREADS=$IMAGE_THREADS; fi
           ./scripts/test_rkc_windows
+        env:
+          IMAGE_THREADS: ${{ inputs.image_threads }}
