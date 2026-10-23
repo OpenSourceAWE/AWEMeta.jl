@@ -1,4 +1,4 @@
-name: Test KiteModels#main --update
+name: Test KiteModels#main update
 
 on:
   schedule:
@@ -16,6 +16,9 @@ jobs:
       - uses: julia-actions/install-juliaup@v3
         with:
           channel: '1'
+      # update_default_manifests needs every Julia version with a Manifest-v<version>.toml.default
+      - name: Install Julia 1.12
+        run: juliaup add 1.12
       - name: Run script test_kitemodels_main-update
         run: |
           DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24' ./scripts/test_kitemodels_main-update
