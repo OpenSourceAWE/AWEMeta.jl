@@ -35,8 +35,9 @@ jobs:
         with:
           channel: '1'
       # update_default_manifests needs every Julia version with a Manifest-v<version>.toml.default
-      - name: Install Julia 1.12
-        run: juliaup add 1.12
+      # It calls julia +<version>, which needs a juliaup channel of exactly that name
+      - name: Install Julia 1.12 and 1.13
+        run: juliaup add 1.12 && juliaup add 1.13
       - name: Run script test_kitecontrollers_main-update
         run: |
           # Log memory, swap and CPU activity every 60 s (si/so = swap in/out in KB/s, cpu = 100% - idle over 5 s)
