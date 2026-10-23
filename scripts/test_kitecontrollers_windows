@@ -1,0 +1,30 @@
+#!/bin/bash -eu
+# SPDX-FileCopyrightText: 2026 Uwe Fechner
+# SPDX-License-Identifier: MIT
+#
+# Builds the system image of KiteControllers.jl#main on Windows, to measure the memory the
+# build needs without image compression, and checks that the image stays below the 1.9 GB
+# that Windows can load.
+
+MAX_BYTES=1900000000
+
+rm -rf /tmp/testdepot
+mkdir /tmp/testdepot
+rm -rf /tmp/test
+mkdir /tmp/test
+cd /tmp/test
+export JULIA_DEPOT_PATH=$(cygpath -w /tmp/testdepot)
+export JULIA_PKG_SERVER_REGISTRY_PREFERENCE=eager
+git clone https://github.com/OpenSourceAWE/KiteControllers.jl.git
+cd KiteControllers.jl/bin
+./install -y
+./create_sys_image -y
+cd ..
+
+image=$(ls bin/kps-image-*.so)
+size=$(stat -c %s "$image")
+echo "System image $image: $(( size / 1048576 )) MB"
+if (( size >= MAX_BYTES )); then
+    echo "Error: the system image is larger than 1.9 GB." >&2
+    exit 1
+fi

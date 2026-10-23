@@ -1,0 +1,88 @@
+name: Test KiteControllers#main (Windows)
+
+on:
+  workflow_dispatch:      # Allows manual trigger from the Actions tab
+    inputs:
+      image_threads:
+        description: 'JULIA_IMAGE_THREADS for the image build (empty: chosen by bin/create_sys_image)'
+        required: false
+        default: ''
+
+jobs:
+  run-script:
+    runs-on: windows-latest
+    timeout-minutes: 360
+    defaults:
+      run:
+        shell: bash
+    steps:
+      # The same pagefile as RKC1, so that the peak commit charge of both can be compared
+      - name: Configure pagefile
+        uses: al-cheb/configure-pagefile-action@v1.5
+        with:
+          minimum-size: 24GB
+          maximum-size: 24GB
+          disk-root: "D:"
+      # GLMakie needs OpenGL, which the runner has no driver for; Mesa renders in software
+      - name: Install Mesa
+        uses: ssciwr/setup-mesa-dist-win@v3
+      - name: Show memory, disk and CPU
+        run: |
+          powershell -NoProfile -Command '
+            $cs = Get-CimInstance Win32_ComputerSystem
+            "RAM: {0} MB" -f [math]::Floor($cs.TotalPhysicalMemory / 1MB)
+            Get-CimInstance Win32_PageFileSetting | Format-Table Name, InitialSize, MaximumSize
+            Get-CimInstance Win32_PageFileUsage | Format-Table Name, AllocatedBaseSize, CurrentUsage
+            Get-CimInstance Win32_LogicalDisk | Format-Table DeviceID, @{n="FreeGB"; e={[math]::Floor($_.FreeSpace / 1GB)}}
+            "CPU: {0} ({1} logical processors)" -f (Get-CimInstance Win32_Processor).Name, $cs.NumberOfLogicalProcessors'
+      - name: Checkout code
+        uses: actions/checkout@v7
+      - uses: julia-actions/install-juliaup@v3
+        with:
+          channel: '1'
+      - name: Run script test_kitecontrollers_windows
+        run: |
+          # Log memory, pagefile, commit charge and CPU load every 60 s; the samples go to a file
+          # so that the logger never blocks, tail shows them in the job log. Windows fails an
+          # allocation when the commit charge reaches the commit limit (RAM + pagefile).
+          : > /tmp/memlog
+          ( set +x; while true; do
+              powershell -NoProfile -Command '
+                $os = Get-CimInstance Win32_OperatingSystem
+                $pf = (Get-CimInstance Win32_PageFileUsage | Measure-Object CurrentUsage -Sum).Sum
+                $peak = (Get-CimInstance Win32_PageFileUsage | Measure-Object PeakUsage -Sum).Sum
+                $mem = Get-CimInstance Win32_PerfRawData_PerfOS_Memory
+                $cpu = (Get-CimInstance Win32_Processor | Measure-Object LoadPercentage -Average).Average
+                "[mem {0}] used={1}MB avail={2}MB pagefile={3}MB pagefile_peak={4}MB commit={5}MB commit_limit={6}MB cpu={7}%" -f (Get-Date).ToUniversalTime().ToString("HH:mm:ss"), [math]::Floor(($os.TotalVisibleMemorySize - $os.FreePhysicalMemory) / 1024), [math]::Floor($os.FreePhysicalMemory / 1024), $pf, $peak, [math]::Floor($mem.CommittedBytes / 1MB), [math]::Floor($mem.CommitLimit / 1MB), $cpu' >> /tmp/memlog
+              sleep 55
+            done ) &
+          MEMLOG_PID=$!
+          tail -f /tmp/memlog &
+          TAIL_PID=$!
+          # At the end print the peak commit charge since boot, which the 60 s samples can miss
+          cat > /tmp/commit_peak.ps1 <<'EOF'
+          Add-Type -TypeDefinition @"
+          using System;
+          using System.Runtime.InteropServices;
+          public static class Perf {
+              [StructLayout(LayoutKind.Sequential)]
+              public struct Info {
+                  public uint cb;
+                  public UIntPtr CommitTotal, CommitLimit, CommitPeak, PhysicalTotal, PhysicalAvailable,
+                      SystemCache, KernelTotal, KernelPaged, KernelNonpaged, PageSize;
+                  public uint HandleCount, ProcessCount, ThreadCount;
+              }
+              [DllImport("psapi.dll")]
+              public static extern bool GetPerformanceInfo(out Info info, uint cb);
+          }
+          "@
+          $i = New-Object Perf+Info
+          [void][Perf]::GetPerformanceInfo([ref]$i, [Runtime.InteropServices.Marshal]::SizeOf($i))
+          $p = $i.PageSize.ToUInt64() / 1MB
+          "[mem peak] commit_peak={0}MB commit_limit={1}MB" -f [math]::Floor($i.CommitPeak.ToUInt64() * $p), [math]::Floor($i.CommitLimit.ToUInt64() * $p)
+          EOF
+          trap 'kill $MEMLOG_PID $TAIL_PID 2>/dev/null || true; powershell -NoProfile -ExecutionPolicy Bypass -File "$(cygpath -w /tmp/commit_peak.ps1)" || true' EXIT
+          if [ -n "$IMAGE_THREADS" ]; then export JULIA_IMAGE_THREADS=$IMAGE_THREADS; fi
+          ./scripts/test_kitecontrollers_windows
+        env:
+          IMAGE_THREADS: ${{ inputs.image_threads }}
