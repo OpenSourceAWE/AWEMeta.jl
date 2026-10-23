@@ -1,4 +1,4 @@
-name: Test KiteControllers#main --update
+name: Test KiteControllers#main update
 
 on:
   schedule:
@@ -34,6 +34,9 @@ jobs:
       - uses: julia-actions/install-juliaup@v3
         with:
           channel: '1'
+      # update_default_manifests needs every Julia version with a Manifest-v<version>.toml.default
+      - name: Install Julia 1.12
+        run: juliaup add 1.12
       - name: Run script test_kitecontrollers_main-update
         run: |
           # Log memory, swap and CPU activity every 60 s (si/so = swap in/out in KB/s, cpu = 100% - idle over 5 s)

@@ -10,6 +10,9 @@ cd /tmp/test
 export JULIA_DEPOT_PATH=/tmp/testdepot 
 export JULIA_PKG_SERVER_REGISTRY_PREFERENCE=eager
 git clone https://github.com/OpenSourceAWE/KiteControllers.jl.git
-cd KiteControllers.jl/bin
-./install -y --update
-./create_sys_image -y
+cd KiteControllers.jl
+# update_default_manifests commits the updated defaults to this throwaway clone
+git config user.name "AWEMeta CI"
+git config user.email "awemeta-ci@users.noreply.github.com"
+./bin/update_default_manifests -y
+./bin/create_sys_image -y
