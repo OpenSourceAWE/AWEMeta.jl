@@ -31,7 +31,7 @@ jobs:
             Get-CimInstance Win32_LogicalDisk | Format-Table DeviceID, @{n="FreeGB"; e={[math]::Floor($_.FreeSpace / 1GB)}}
             "CPU: {0} ({1} logical processors)" -f (Get-CimInstance Win32_Processor).Name, $cs.NumberOfLogicalProcessors'
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - uses: julia-actions/install-juliaup@v3
         with:
           channel: '1'
